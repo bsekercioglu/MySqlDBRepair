@@ -1,0 +1,26 @@
+# Log dosyaları
+db_bakim_log_*.txt
+*.log
+
+# Yedek dosyaları
+backup_*.sql
+*.sql.bak
+
+# Config dosyası (güvenlik için)
+config.php
+
+# IDE dosyaları
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS dosyaları
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Geçici dosyalar
+*.tmp
+*.temp
