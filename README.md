@@ -122,7 +122,7 @@ Her çalıştırmada `db_bakim_log_YYYY-MM-DD_HH-MM-SS.txt` formatında bir log 
 
 ### Yedek Dosyası
 
-Bakım sonrası `backup_kurs_YYYY-MM-DD_HH-MM-SS.sql` formatında bir SQL dump dosyası oluşturulur. Bu dosya:
+Bakım sonrası `backup/` klasörüne `backup_kurs_YYYY-MM-DD_HH-MM-SS.sql` formatında bir SQL dump dosyası oluşturulur. Bu dosya:
 - Tüm tablo yapılarını içerir
 - Tüm verileri INSERT komutları olarak içerir
 - Standart MySQL dump formatındadır
@@ -197,7 +197,9 @@ PhpDBBakim/
 ├── mysql_sistem_repair.php   # MySQL sistem tabloları onarım scripti
 ├── README.md                 # Bu dosya
 ├── .gitignore                # Git ignore dosyası
-├── backup_*.sql              # Oluşturulan yedek dosyaları
+├── backup/                   # Yedek dosyaları klasörü
+│   ├── backup_*.sql          # Oluşturulan yedek dosyaları
+│   └── .gitkeep              # Git için klasörü koruyan dosya
 └── db_bakim_log_*.txt       # Log dosyaları
 ```
 

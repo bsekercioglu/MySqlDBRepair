@@ -516,8 +516,13 @@ try {
             <p>Yedek dosyası SQL formatında oluşturulacak ve indirilebilir olacaktır.</p>
         </div>';
     
+    $backupDir = __DIR__ . '/backup';
+    if (!is_dir($backupDir)) {
+        mkdir($backupDir, 0755, true);
+    }
+    
     $backupFile = 'backup_' . $dbname . '_' . date('Y-m-d_H-i-s') . '.sql';
-    $backupPath = __DIR__ . '/' . $backupFile;
+    $backupPath = $backupDir . '/' . $backupFile;
     $backupSuccess = false;
     $backupError = '';
     
@@ -553,7 +558,7 @@ try {
                 <p>Dosya adı: <strong>' . htmlspecialchars($backupFile) . '</strong></p>
                 <p>Dosya boyutu: <strong>' . $fileSizeFormatted . '</strong></p>
                 <p style="margin-top: 15px;">
-                    <a href="' . htmlspecialchars($backupFile) . '" class="btn-download" download>📥 Yedeği İndir</a>
+                    <a href="backup/' . htmlspecialchars($backupFile) . '" class="btn-download" download>📥 Yedeği İndir</a>
                 </p>
             </div>';
         } else {

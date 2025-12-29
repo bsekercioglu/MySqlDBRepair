@@ -38,8 +38,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         
         $backupData = [];
         if (!empty($existingTables)) {
+            $backupDir = __DIR__ . '/backup';
+            if (!is_dir($backupDir)) {
+                mkdir($backupDir, 0755, true);
+            }
+            
             $backupFile = 'backup_before_import_' . date('Y-m-d_H-i-s') . '.sql';
-            $backupPath = __DIR__ . '/' . $backupFile;
+            $backupPath = $backupDir . '/' . $backupFile;
             
             foreach ($existingTables as $table) {
                 $stmt = $pdo->query("SHOW CREATE TABLE `$table`");

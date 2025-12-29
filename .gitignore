@@ -8,6 +8,10 @@ backup_*.sql
 *.sql
 !config.example.php
 
+# Backup klasörü (içeriği ignore edilir ama klasör korunur)
+backup/*
+!backup/.gitkeep
+
 # Config dosyası (güvenlik için)
 config.php
 
