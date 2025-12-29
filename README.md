@@ -115,7 +115,7 @@ Script çalıştırıldığında tarayıcıda görsel bir rapor oluşturulur:
 
 ### Log Dosyası
 
-Her çalıştırmada `db_bakim_log_YYYY-MM-DD_HH-MM-SS.txt` formatında bir log dosyası oluşturulur. Bu dosya:
+Her çalıştırmada `log/` klasörüne `db_bakim_log_YYYY-MM-DD_HH-MM-SS.txt` formatında bir log dosyası oluşturulur. Bu dosya:
 - Tüm tablolar için işlem sonuçlarını içerir
 - Hata mesajlarını detaylı şekilde kaydeder
 - Daha sonra inceleme yapmak için saklanabilir
@@ -200,7 +200,9 @@ PhpDBBakim/
 ├── backup/                   # Yedek dosyaları klasörü
 │   ├── backup_*.sql          # Oluşturulan yedek dosyaları
 │   └── .gitkeep              # Git için klasörü koruyan dosya
-└── db_bakim_log_*.txt       # Log dosyaları
+└── log/                      # Log dosyaları klasörü
+    ├── db_bakim_log_*.txt    # Oluşturulan log dosyaları
+    └── .gitkeep              # Git için klasörü koruyan dosya
 ```
 
 ## Teknik Detaylar

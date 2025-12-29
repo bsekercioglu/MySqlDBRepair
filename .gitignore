@@ -1,5 +1,6 @@
 # Log dosyaları
-db_bakim_log_*.txt
+log/*
+!log/.gitkeep
 *.log
 
 # Yedek dosyaları

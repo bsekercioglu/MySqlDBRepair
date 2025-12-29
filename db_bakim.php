@@ -582,7 +582,13 @@ try {
         Bakım işlemi tamamlandı! | ' . date('Y-m-d H:i:s') . '
     </div>';
     
+    $logDir = __DIR__ . '/log';
+    if (!is_dir($logDir)) {
+        mkdir($logDir, 0755, true);
+    }
+    
     $logFile = 'db_bakim_log_' . date('Y-m-d_H-i-s') . '.txt';
+    $logPath = $logDir . '/' . $logFile;
     $logContent = "Veritabanı Bakım Raporu\n";
     $logContent .= "Tarih: " . date('Y-m-d H:i:s') . "\n";
     $logContent .= "Veritabanı: $dbname\n";
@@ -603,9 +609,9 @@ try {
         $logContent .= "\n";
     }
     
-    file_put_contents($logFile, $logContent);
+    file_put_contents($logPath, $logContent);
     echo '<div style="text-align: center; padding: 20px; background: #e9ecef; margin-top: 20px; border-radius: 5px;">
-        <strong>Detaylı rapor kaydedildi:</strong> ' . htmlspecialchars($logFile) . '
+        <strong>Detaylı rapor kaydedildi:</strong> log/' . htmlspecialchars($logFile) . '
     </div>';
     
     echo '</div>';
