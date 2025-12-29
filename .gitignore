@@ -5,6 +5,8 @@ db_bakim_log_*.txt
 # Yedek dosyaları
 backup_*.sql
 *.sql.bak
+*.sql
+!config.example.php
 
 # Config dosyası (güvenlik için)
 config.php

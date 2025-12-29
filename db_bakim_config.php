@@ -1,10 +1,6 @@
 <?php
-// MySQL Veritabanı Bakım ve Yedekleme Scripti (Config dosyası ile)
-// kurs veritabanı için tablo bakımı ve otomatik yedekleme
-
 header('Content-Type: text/html; charset=utf-8');
 
-// Dosya boyutunu okunabilir formata çevir
 function formatBytes($bytes, $precision = 2) {
     $units = array('B', 'KB', 'MB', 'GB', 'TB');
     $bytes = max($bytes, 0);
@@ -14,7 +10,6 @@ function formatBytes($bytes, $precision = 2) {
     return round($bytes, $precision) . ' ' . $units[$pow];
 }
 
-// mysqldump çalışmazsa PHP ile yedek oluştur
 function createBackupManually($pdo, $dbname, $backupPath) {
     try {
         $pdo->exec("USE `$dbname`");

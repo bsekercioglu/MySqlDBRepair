@@ -1,10 +1,6 @@
 <?php
-// MySQL Veritabanı Bakım ve Yedekleme Scripti
-// kurs veritabanı için tablo bakımı ve otomatik yedekleme
-
 header('Content-Type: text/html; charset=utf-8');
 
-// Dosya boyutunu okunabilir formata çevir
 function formatBytes($bytes, $precision = 2) {
     $units = array('B', 'KB', 'MB', 'GB', 'TB');
     $bytes = max($bytes, 0);
@@ -14,7 +10,6 @@ function formatBytes($bytes, $precision = 2) {
     return round($bytes, $precision) . ' ' . $units[$pow];
 }
 
-// mysqldump çalışmazsa PHP ile yedek oluştur
 function createBackupManually($pdo, $dbname, $backupPath) {
     try {
         $pdo->exec("USE `$dbname`");
@@ -78,13 +73,11 @@ function createBackupManually($pdo, $dbname, $backupPath) {
     }
 }
 
-// Veritabanı bağlantı bilgileri
 $host = 'localhost';
 $dbname = 'kurs';
-$username = 'root'; // Kullanıcı adınızı buraya yazın
-$password = ''; // Şifrenizi buraya yazın
+$username = 'root';
+$password = '';
 
-// HTML çıktı bufferı başlat
 ob_start();
 
 try {
@@ -94,7 +87,6 @@ try {
         PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
     ]);
     
-    // HTML başlangıcı
     echo '<!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -349,7 +341,6 @@ try {
             'hata' => []
         ];
         
-        // Tablo bütünlüğü kontrolü
         try {
             $stmt = $pdo->query("CHECK TABLE `$table`");
             $checkResults = $stmt->fetchAll();
@@ -370,7 +361,6 @@ try {
             $tableResult['hata'][] = "CHECK: " . $e->getMessage();
         }
         
-        // İstatistikleri güncelle
         try {
             $stmt = $pdo->query("ANALYZE TABLE `$table`");
             $stmt->fetchAll();
@@ -380,7 +370,6 @@ try {
             $tableResult['hata'][] = "ANALYZE: " . $e->getMessage();
         }
         
-        // Tabloyu optimize et
         try {
             $stmt = $pdo->query("OPTIMIZE TABLE `$table`");
             $optimizeResults = $stmt->fetchAll();
@@ -405,7 +394,6 @@ try {
             $tableResult['hata'][] = "OPTIMIZE: " . $e->getMessage();
         }
         
-        // MyISAM tabloları için onarım kontrolü
         try {
             $stmt = $pdo->query("SHOW TABLE STATUS LIKE '$table'");
             $tableStatuses = $stmt->fetchAll();
@@ -589,7 +577,6 @@ try {
         Bakım işlemi tamamlandı! | ' . date('Y-m-d H:i:s') . '
     </div>';
     
-    // Log dosyası oluştur
     $logFile = 'db_bakim_log_' . date('Y-m-d_H-i-s') . '.txt';
     $logContent = "Veritabanı Bakım Raporu\n";
     $logContent .= "Tarih: " . date('Y-m-d H:i:s') . "\n";

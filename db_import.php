@@ -1,10 +1,6 @@
 <?php
-// Veritabanı Import Scripti
-// SQL backup dosyasından veritabanı geri yükleme işlemi
-
 header('Content-Type: text/html; charset=utf-8');
 
-// Config dosyası varsa onu kullan, yoksa varsayılan değerler
 if (file_exists(__DIR__ . '/config.php')) {
     $config = require __DIR__ . '/config.php';
     $host = $config['host'];
@@ -18,7 +14,6 @@ if (file_exists(__DIR__ . '/config.php')) {
     $password = '';
 }
 
-// Dosya yükleme işlemi
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'import') {
     header('Content-Type: application/json');
     
@@ -38,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         
         $pdo->exec("USE `$dbname`");
         
-        // Mevcut tabloları tespit et ve yedekle
         $stmt = $pdo->query("SHOW TABLES");
         $existingTables = $stmt->fetchAll(PDO::FETCH_COLUMN);
         
@@ -75,22 +69,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             file_put_contents($backupPath, implode('', $backupData));
         }
         
-        // Mevcut tabloları drop et
         foreach ($existingTables as $table) {
             $pdo->exec("DROP TABLE IF EXISTS `$table`");
         }
         
-        // SQL dosyasını oku
         $sqlContent = file_get_contents($uploadedFile);
-        
-        // BOM karakterini temizle
         $sqlContent = preg_replace('/^\xEF\xBB\xBF/', '', $sqlContent);
-        
-        // Yorumları temizle
         $sqlContent = preg_replace('/\/\*.*?\*\//s', '', $sqlContent);
         $sqlContent = preg_replace('/--.*$/m', '', $sqlContent);
-        
-        // SQL komutlarını güvenli şekilde böl
         $commands = [];
         $currentCommand = '';
         $inQuotes = false;
@@ -105,7 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $prevChar = ($i > 0) ? $sqlContent[$i - 1] : '';
             $nextChar = ($i < $length - 1) ? $sqlContent[$i + 1] : '';
             
-            // Escape karakteri kontrolü
             if ($char === '\\' && ($inSingleQuote || $inDoubleQuote)) {
                 $currentCommand .= $char;
                 if ($i < $length - 1) {
@@ -115,21 +100,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 continue;
             }
             
-            // Tek tırnak
             if ($char === "'" && !$inDoubleQuote && !$inBacktick) {
                 $inSingleQuote = !$inSingleQuote;
                 $currentCommand .= $char;
                 continue;
             }
             
-            // Çift tırnak
             if ($char === '"' && !$inSingleQuote && !$inBacktick) {
                 $inDoubleQuote = !$inDoubleQuote;
                 $currentCommand .= $char;
                 continue;
             }
             
-            // Backtick
             if ($char === '`' && !$inSingleQuote && !$inDoubleQuote) {
                 $inBacktick = !$inBacktick;
                 $currentCommand .= $char;
@@ -138,13 +120,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             
             $currentCommand .= $char;
             
-            // Noktalı virgül bulundu ve quote içinde değiliz
             if ($char === ';' && !$inSingleQuote && !$inDoubleQuote && !$inBacktick) {
                 $cmd = trim($currentCommand);
                 $currentCommand = '';
                 
                 if (!empty($cmd)) {
-                    // Gereksiz komutları filtrele
                     $skipCommands = ['SET', 'USE', '/*', '--', 'DELIMITER'];
                     $shouldSkip = false;
                     
@@ -162,7 +142,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             }
         }
         
-        // Son komutu ekle (eğer noktalı virgül ile bitmediyse)
         if (!empty(trim($currentCommand))) {
             $cmd = trim($currentCommand);
             if (!empty($cmd) && stripos($cmd, 'SET') !== 0 && stripos($cmd, 'USE') !== 0) {
@@ -170,7 +149,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             }
         }
         
-        // Tablo isimlerini ve INSERT sayılarını tespit et
         $tableStats = [];
         foreach ($commands as $cmd) {
             if (preg_match('/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?[`"]?(\w+)[`"]?/i', $cmd, $matches)) {
@@ -193,7 +171,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $results = [];
         $currentTableProgress = [];
         
-        // SQL komutlarını çalıştır
         foreach ($commands as $index => $cmd) {
             $cmd = trim($cmd);
             if (empty($cmd)) continue;
@@ -202,7 +179,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 $pdo->exec($cmd);
                 $processedCommands++;
                 
-                // Hangi tablo üzerinde işlem yapıldığını tespit et
                 $currentTable = null;
                 $operation = 'SQL komutu';
                 
@@ -247,13 +223,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     'message' => $message
                 ];
                 
-                // Her 10 komutta bir ilerleme gönder (performans için)
                 if ($processedCommands % 10 == 0 || $index == count($commands) - 1) {
                     flush();
                 }
                 
             } catch (PDOException $e) {
-                // Bazı hataları yok say
                 $errorMsg = $e->getMessage();
                 $ignoreErrors = ['already exists', 'Unknown database', 'Duplicate entry'];
                 $shouldIgnore = false;
@@ -293,7 +267,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit;
 }
 
-// HTML Sayfası
 ?>
 <!DOCTYPE html>
 <html lang="tr">
@@ -514,7 +487,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         const progressFill = document.getElementById('progressFill');
         const progressDetails = document.getElementById('progressDetails');
         
-        // Drag & Drop
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.classList.add('dragover');
@@ -558,7 +530,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         importForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // SweetAlert onay iste
             const result = await Swal.fire({
                 title: '⚠️ DİKKAT!',
                 html: `
@@ -581,25 +552,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 return;
             }
             
-            // Form verilerini hazırla
             const formData = new FormData();
             formData.append('sql_file', fileInput.files[0]);
             formData.append('action', 'import');
             
-            // UI hazırla
             importBtn.disabled = true;
             progressContainer.classList.add('show');
             progressFill.style.width = '0%';
             progressFill.textContent = '0%';
             progressDetails.innerHTML = '<div class="progress-item">İşlem başlatılıyor...</div>';
             
-            // AJAX ile gönder
             const xhr = new XMLHttpRequest();
             
             xhr.upload.addEventListener('progress', (e) => {
                 if (e.lengthComputable) {
                     const percentComplete = (e.loaded / e.total) * 100;
-                    // Dosya yükleme ilerlemesi
                 }
             });
             
@@ -609,7 +576,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         const response = JSON.parse(xhr.responseText);
                         
                         if (response.success) {
-                            // İlerleme güncellemeleri
                             let currentProgress = 0;
                             const results = response.results || [];
                             
@@ -627,7 +593,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                 }, index * 50);
                             });
                             
-                            // İşlem tamamlandı
                             setTimeout(() => {
                                 Swal.fire({
                                     title: '✅ Başarılı!',

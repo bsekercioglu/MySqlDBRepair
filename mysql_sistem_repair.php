@@ -1,7 +1,6 @@
 <?php
+<?php
 // MySQL Sistem Tabloları Onarım Scripti
-// mysql.user ve diğer sistem tablolarını kontrol eder
-// DİKKAT: Sistem tablolarına müdahale eder, dikkatli kullanın
 
 header('Content-Type: text/html; charset=utf-8');
 
