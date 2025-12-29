@@ -8,6 +8,17 @@ Zamanla MySQL veritabanlarında biriken fragmantasyon, istatistik kayıpları ve
 
 ## Özellikler ve İşlevler
 
+### SQL Import (Geri Yükleme)
+
+`db_import.php` scripti ile SQL backup dosyalarınızı geri yükleyebilirsiniz:
+
+- **Dosya Yükleme**: phpMyAdmin veya bu proje tarafından oluşturulan SQL dosyalarını yükleyebilirsiniz
+- **Otomatik Yedekleme**: Import işlemi öncesi mevcut veritabanı otomatik olarak yedeklenir
+- **Güvenli İşlem**: SweetAlert ile kullanıcı onayı alınır
+- **İlerleme Takibi**: Her tablo için gerçek zamanlı ilerleme gösterilir
+- **Tablo Bazlı Progress**: Hangi tabloda % kaç yükleme yapıldığı görüntülenir
+- **Drag & Drop**: Dosyayı sürükleyip bırakarak yükleyebilirsiniz
+
 ### Bakım İşlemleri
 
 Her tablo için aşağıdaki bakım işlemleri sırasıyla gerçekleştirilir:
@@ -76,8 +87,19 @@ Bakım işlemleri tamamlandıktan sonra otomatik olarak veritabanı yedeği alı
 
 Daha düzenli bir yapı için config dosyası kullanabilirsiniz:
 
-1. `config.php` dosyasını düzenleyip veritabanı bilgilerinizi girin
-2. `db_bakim_config.php` dosyasını çalıştırın
+1. `config.example.php` dosyasını `config.php` olarak kopyalayın
+2. `config.php` dosyasını düzenleyip veritabanı bilgilerinizi girin
+3. `db_bakim_config.php` dosyasını çalıştırın
+
+### Yöntem 3: SQL Import (Geri Yükleme)
+
+SQL backup dosyasını geri yüklemek için:
+
+1. Tarayıcınızdan `db_import.php` dosyasını açın
+2. SQL dosyanızı seçin (sürükleyip bırakabilir veya tıklayarak seçebilirsiniz)
+3. SweetAlert onay mesajını okuyup onaylayın
+4. İlerlemeyi takip edin
+5. İşlem tamamlandığında yedek dosya bilgisi gösterilecektir
 
 Bu yöntem, özellikle birden fazla veritabanı için script kullanacaksanız daha pratik olacaktır.
 
@@ -169,9 +191,12 @@ Düzenli bakım için cron job veya Windows Task Scheduler kullanabilirsiniz:
 PhpDBBakim/
 ├── db_bakim.php              # Ana bakım scripti (tek dosya)
 ├── db_bakim_config.php       # Config dosyası kullanan versiyon
+├── db_import.php             # SQL import ve geri yükleme scripti
 ├── config.php                # Veritabanı bağlantı ayarları
+├── config.example.php        # Örnek config dosyası
 ├── mysql_sistem_repair.php   # MySQL sistem tabloları onarım scripti
 ├── README.md                 # Bu dosya
+├── .gitignore                # Git ignore dosyası
 ├── backup_*.sql              # Oluşturulan yedek dosyaları
 └── db_bakim_log_*.txt       # Log dosyaları
 ```
