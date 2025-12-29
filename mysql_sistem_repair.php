@@ -1,5 +1,4 @@
 <?php
-<?php
 // MySQL Sistem Tabloları Onarım Scripti
 
 header('Content-Type: text/html; charset=utf-8');
